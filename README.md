@@ -8,3 +8,7 @@ Algumas mudanças em relação ao projeto original:
 
 - Uso apropriado dos namespaces
 
+- Confirmação ao excluir séries
+
+- Impede visualização de cadastros "excluídos", porém sem remover os dados
+

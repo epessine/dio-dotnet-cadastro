@@ -19,21 +19,27 @@ namespace dio_dotnet_cadastro
                     case "1":
                         ListarSeries();
                         break;
+
                     case "2":
                         InserirSerie();
                         break;
+
                     case "3":
                         AtualizarSerie();
                         break;
+
                     case "4":
-                        //
+                        ExcluirSerie();
                         break;
+
                     case "5":
-                        //
+                        VisualizarSerie();
                         break;
+
                     case "C":
                         Console.Clear();
                         break;
+
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
@@ -77,7 +83,12 @@ namespace dio_dotnet_cadastro
 
             foreach (var serie in lista)
             {
-                Console.WriteLine("#ID {0}: - {1}", serie.retornaId(), serie.retornaTitulo());
+                var excluido = serie.retornaExcluido();
+                
+                if (!excluido)
+                {
+                    Console.WriteLine("#ID {0}: - {1}", serie.retornaId(), serie.retornaTitulo());
+                }
             }
         }
 
@@ -104,6 +115,18 @@ namespace dio_dotnet_cadastro
             entradaDescricao = Console.ReadLine();
         }
 
+        private static bool checaExiste(int id)
+        {
+            if (id <= repositorio.ProximoId() || !repositorio.RetornaPorId(id).retornaExcluido())
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
         private static void InserirSerie()
         {
             Console.WriteLine("Inserir nova série:");
@@ -128,19 +151,68 @@ namespace dio_dotnet_cadastro
             Console.WriteLine("Insira o ID da série que deseja atualizar: ");
             int indiceSerie = int.Parse(Console.ReadLine());
 
-            int entradaGenero;
-            string entradaTitulo;
-            int entradaAno;
-            string entradaDescricao;
-            retornaInformacoes(out entradaGenero, out entradaTitulo, out entradaAno, out entradaDescricao);
+            if (!checaExiste(indiceSerie))
+            {
+                Console.WriteLine("Série não encontrada...");
+                return;
+            } 
+            else 
+            {
+                int entradaGenero;
+                string entradaTitulo;
+                int entradaAno;
+                string entradaDescricao;
+                retornaInformacoes(out entradaGenero, out entradaTitulo, out entradaAno, out entradaDescricao);
 
-            Serie atualizaSerie = new Serie(id: indiceSerie,
-                                        genero: (Genero)entradaGenero,
-                                        titulo: entradaTitulo,
-                                        ano: entradaAno,
-                                        descricao: entradaDescricao);
+                Serie atualizaSerie = new Serie(id: indiceSerie,
+                                            genero: (Genero)entradaGenero,
+                                            titulo: entradaTitulo,
+                                            ano: entradaAno,
+                                            descricao: entradaDescricao);
 
-            repositorio.Atualiza(indiceSerie, atualizaSerie);
+                repositorio.Atualiza(indiceSerie, atualizaSerie);
+            }
+        }
+
+        private static void ExcluirSerie()
+        {
+            Console.WriteLine("Insira o ID da série que deseja excluir: ");
+            int indiceSerie = int.Parse(Console.ReadLine());
+
+            if (!checaExiste(indiceSerie))
+            {
+                Console.WriteLine("Série não encontrada...");
+                return;
+            } 
+            else 
+            {
+                Console.WriteLine("Você realmente deseja excluir essa série? S/N");
+                if (Console.ReadLine().ToUpper() == "S")
+                {
+                    repositorio.Exclui(indiceSerie);
+                } 
+                else
+                {
+                    return;
+                }
+            }
+        }
+
+        public static void VisualizarSerie()
+        {
+            Console.WriteLine("Insira o ID da série que deseja visualizar: ");
+            int indiceSerie = int.Parse(Console.ReadLine());
+
+            if (!checaExiste(indiceSerie)) 
+            {
+                Console.WriteLine("Série não encontrada...");
+                return;
+            }
+            else
+            {
+                var serie = repositorio.RetornaPorId(indiceSerie);
+                Console.WriteLine(serie);
+            }
         }
     }
 }

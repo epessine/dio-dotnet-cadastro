@@ -42,6 +42,11 @@ namespace dio_dotnet_cadastro.Classes
             return this.Id;
         }
 
+        public bool retornaExcluido()
+        {
+            return this.Excluido;
+        }
+
         public void Excluir()
         {
             this.Excluido = true;
